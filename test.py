@@ -3,28 +3,32 @@ import h5py
 import os
 from openslide import OpenSlide
 from PIL import Image
-import numpy as np
+# import numpy as np
+import tensorflow.experimental.numpy as tnp
 import glob
 import random
 from tensorflow.keras.applications.resnet50 import preprocess_input
+
+tnp.experimental_enable_numpy_behavior()
 
 # Define the size of the patches you want to extract
 patch_size = (256, 256)  # Change this to your required patch size
 
 # Directory with the .h5 files
-h5_dir = '/meladyfs/newyork/emilysk8/patches_miniTCGA-LUAD/patches/'
+h5_dir = '/home/emilysk8/TCGA-KICH_patches/patches'
 
 # Directory with the .svs files
-svs_dir = '/meladyfs/newyork/emilysk8/miniTCGA-LUAD/'
+svs_dir = '/home/emilysk8/TCGA-KICH/'
 
-model_path = '/meladyfs/newyork/yangleyland'
+model_path = './'
+
 model = tf.saved_model.load(model_path)
 
 def preprocess_patch(patch):
     # Convert to grayscale, resize, and expand dimensions if necessary
     patch_resized = patch.resize((96, 96))  # Resize to the expected input size of the model
-    patch_np = np.array(patch_resized)
-    patch_np = np.expand_dims(patch_np, axis=-1)  # Add a channel dimension
+    patch_np = tnp.array(patch_resized)
+    patch_np = tnp.expand_dims(patch_np, axis=-1)  # Add a channel dimension
     patch_np = preprocess_input(patch_np)  # Preprocess for ResNet50
     return patch_np
 
@@ -47,5 +51,5 @@ for h5_path in glob.glob(h5_dir + '*.h5'):
         # Preprocess the patch
         patch_processed = preprocess_patch(patch)
 
-        prediction = model(np.array([patch_processed]))  # Ensure to wrap patch in a batch
+        prediction = model(tnp.array([patch_processed]))  # Ensure to wrap patch in a batch
         print(f"Prediction for patch at {coord}: {prediction}")

@@ -7,7 +7,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, Flatten, Dropout, MaxPooling2D
 
 # Load the dataset
-custom_data_dir = "/drive2/yangleyland"
+custom_data_dir = "/home/yangleyland"
 df, info = tfds.load('patch_camelyon', with_info=True, as_supervised=True, data_dir=custom_data_dir)
 
 # Getting the train, validation and test data
@@ -67,5 +67,5 @@ classifier_model.compile(optimizer='adam', loss='binary_crossentropy', metrics=[
 classifier_model.fit(train_features, train_labels, validation_data=(valid_features, valid_labels), epochs=10)
 
 # save model path
-model_save_path = "/drive2/yangleyland"  # or '.savedmodel' for SavedModel format
+model_save_path = "/home/yangleyland"  # or '.savedmodel' for SavedModel format
 classifier_model.save(model_save_path)
